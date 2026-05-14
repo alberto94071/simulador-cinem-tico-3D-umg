@@ -323,11 +323,11 @@ function PhysicsMotorcycle({ velocity, angle, mass, isRunning, targetDistance, o
       }, 30);
 
       // JUEZ DE FÍSICA INTELIGENTE: Evalúa cuando la moto se detiene o cae
-      let checkInterval: NodeJS.Timeout;
+      let checkInterval: NodeJS.Timeout | null = null;
       
       // Esperamos 1 segundo para que la moto gane velocidad y salga de la rampa
       const initialTimeout = setTimeout(() => {
-        checkInterval = setInterval(() => {
+        const interval = setInterval(() => {
           if (!rigidBody.current || !onSimulationEnd) return;
           
           const pos = rigidBody.current.translation();
@@ -337,12 +337,12 @@ function PhysicsMotorcycle({ velocity, angle, mass, isRunning, targetDistance, o
           
           // 1. Condición de pérdida rápida: Cayó al abismo
           if (pos.y < -1) {
-            clearInterval(checkInterval);
+            clearInterval(interval);
             onSimulationEnd(false);
           } 
           // 2. Condición de detención: La moto frenó casi por completo (vel < 0.3 m/s)
           else if (speedSq < 0.1) {
-            clearInterval(checkInterval);
+            clearInterval(interval);
             
             // Verificamos si sus coordenadas X coinciden con la plataforma
             const launchX = -6 + 12 * Math.cos(angleRad);
@@ -353,10 +353,15 @@ function PhysicsMotorcycle({ velocity, angle, mass, isRunning, targetDistance, o
             onSimulationEnd(isOnPlatform);
           }
         }, 200); // Monitorear cada 200ms
+
+        // Guardamos el intervalo real cuando se crea
+        if (rigidBody.current && (rigidBody.current as any)._timeouts) {
+          (rigidBody.current as any)._timeouts.checkInterval = interval;
+        }
       }, 1000);
 
       // Guardamos las referencias en el DOM del elemento (cleanup ref)
-      (rigidBody.current as any)._timeouts = { initialTimeout, checkInterval };
+      (rigidBody.current as any)._timeouts = { initialTimeout, checkInterval: null };
 
     } else if (!isRunning) {
       setHasLaunched(false);
@@ -364,7 +369,9 @@ function PhysicsMotorcycle({ velocity, angle, mass, isRunning, targetDistance, o
       // Limpieza de intervalos si el usuario cancela o reinicia
       if (rigidBody.current && (rigidBody.current as any)._timeouts) {
         clearTimeout((rigidBody.current as any)._timeouts.initialTimeout);
-        clearInterval((rigidBody.current as any)._timeouts.checkInterval);
+        if ((rigidBody.current as any)._timeouts.checkInterval) {
+          clearInterval((rigidBody.current as any)._timeouts.checkInterval);
+        }
       }
       // Cuando no corre, la encajamos al inicio, anulamos su velocidad y apagamos gravedad
       if (rigidBody.current) {
