@@ -60,8 +60,8 @@ function ExternalMotorcycleModel({ angle }: { angle: number }) {
 function ProceduralMotorcycleModel() {
   return (
     <group scale={0.75}>
-      <mesh position={[-0.1, 0.45, 0]} rotation={[0, 0, 0.2]} castShadow>
-        <cylinderGeometry args={[0.15, 0.2, 1, 8]} rotation={[0, 0, Math.PI / 2]} />
+      <mesh position={[-0.1, 0.45, 0]} rotation={[0, 0, Math.PI / 2 + 0.2]} castShadow>
+        <cylinderGeometry args={[0.15, 0.2, 1, 8]} />
         <meshStandardMaterial color="#111" metalness={0.9} roughness={0.3} />
       </mesh>
       <group position={[0.2, 0.6, 0]}>
