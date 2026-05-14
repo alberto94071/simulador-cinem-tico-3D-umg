@@ -21,8 +21,7 @@ import {
   Physics, 
   RigidBody, 
   CuboidCollider, 
-  RapierRigidBody,
-  Debug
+  RapierRigidBody
 } from '@react-three/rapier';
 
 interface Scene3DProps {
