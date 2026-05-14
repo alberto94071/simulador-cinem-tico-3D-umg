@@ -21,7 +21,8 @@ import {
   Physics, 
   RigidBody, 
   CuboidCollider, 
-  RapierRigidBody
+  RapierRigidBody,
+  CoefficientCombineRule
 } from '@react-three/rapier';
 
 interface Scene3DProps {
@@ -179,7 +180,7 @@ const LandingCliff = React.memo(({ distance, angle }: { distance: number, angle:
         colliders="cuboid" 
         position={[launchX + distance, launchHeight - 4, 0]}
         friction={2.0} 
-        frictionCombineRule="Max" // Garantiza que la moto frene al máximo al tocar esta zona
+        frictionCombineRule={CoefficientCombineRule.Max} // Garantiza que la moto frene al máximo al tocar esta zona
       >
         <mesh receiveShadow>
           <boxGeometry args={[12, 8, 8]} />
@@ -227,7 +228,7 @@ const Ramp = React.memo(({ angle }: { angle: number }) => {
       colliders="cuboid" 
       position={[-3, 2, 0]}
       friction={0}
-      frictionCombineRule="Min" // Rampa perfecta sin fricción para no arruinar la física
+      frictionCombineRule={CoefficientCombineRule.Min} // Rampa perfecta sin fricción para no arruinar la física
       restitution={0}
     >
       <mesh receiveShadow>
